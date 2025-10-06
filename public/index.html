@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Good book recommendation - Book Recommender</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <header class="header">
+            <h1>📚 Good book recommendation</h1>
+            <p>Find your next favorite book</p>
+        </header>
+
+        <main class="main-content">
+            <!-- 搜索和筛选区域 -->
+            <section class="filters">
+                <div class="search-box">
+                    <input type="text" v-model="searchQuery" placeholder="Search for books or authors" @input="searchBooks">
+                    <select v-model="selectedGenre" @change="filterByGenre">
+                        <option value="">All types</option>
+                        <option v-for="genre in genres" :key="genre" :value="genre">{{ genre }}</option>
+                    </select>
+                </div>
+            </section>
+
+            <!-- 书籍列表 -->
+            <section class="books-grid">
+                <div v-for="book in books" :key="book._id" class="book-card">
+                    <div class="book-cover">
+                        <img :src="book.coverImage" :alt="book.title" @error="handleImageError" loading="lazy">
+                        <!-- 添加默认封面显示 -->
+                        <div v-if="!book.coverImage || book.coverImage.includes('default')" class="default-cover">
+                            <div class="book-icon">📚</div>
+                            <div class="book-title">{{ book.title }}</div>
+                        </div>
+                    </div>
+                    <div class="book-info">
+                        <h3>{{ book.title }}</h3>
+                        <p class="author">Author: {{ book.author }}</p>
+                        <p class="genre">Type: {{ book.genre }}</p>
+                        <p class="description">{{ book.description }}</p>
+                        <div class="book-actions">
+                            <button @click="recommendBook(book._id)" class="btn-recommend">
+                                👍 recommendation ({{ book.recommendationCount }})
+                            </button>
+                            <button @click="addToFavorites(book._id)" class="btn-favorite">
+                                ❤️ collection
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 添加新书籍表单 -->
+            <section class="add-book-section">
+                <h2>Recommended new books</h2>
+                <form @submit.prevent="addNewBook" class="add-book-form">
+                    <input type="text" v-model="newBook.title" placeholder="title" required>
+                    <input type="text" v-model="newBook.author" placeholder="author" required>
+                    <textarea v-model="newBook.description" placeholder="book description" required></textarea>
+                    <select v-model="newBook.genre" required>
+                        <option value="">select type/option>
+                        <option v-for="genre in genres" :key="genre" :value="genre">{{ genre }}</option>
+                    </select>
+                    
+                    <div class="form-group">
+                        <label for="book-cover">upload book cover:</label>
+                        <input 
+                            type="file" 
+                            id="book-cover" 
+                            ref="fileInput"
+                            accept="image/*" 
+                            @change="handleImageSelect"
+                        >
+                        <!-- 图片预览 -->
+                        <div v-if="imagePreview" class="image-preview">
+                            <img :src="imagePreview" alt="preview pictures" class="preview-image">
+                        </div>
+                    </div>
+                    <input type="number" v-model="newBook.publishedYear" placeholder="Year of publication">
+                    <input type="text" v-model="newBook.isbn" placeholder="ISBN">
+                    <button type="submit">add book</button>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+
+</html>
