@@ -20,6 +20,8 @@
 
 ## 安装和运行
 
-1. 安装依赖：
+
 ```bash
 npm install
+npm run seed
+npm start  or npm run dev
